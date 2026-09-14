@@ -198,25 +198,28 @@ export function PersonaIntake({
 
       {kind === "personaQuestion" && q && (() => {
         const sel = view.answers?.[personaIndex] ?? [];
-        const full = sel.length >= q.maxSelect;
-        const otherPicked = sel.some((idx) => isOtherOption(q.options[idx] ?? ""));
+        const isOther = (idx: number) => isOtherOption(q.options[idx] ?? "");
+        // The limit counts listed options only; "Other" can always be added on top.
+        const full = sel.filter((idx) => !isOther(idx)).length >= q.maxSelect;
+        const otherPicked = sel.some(isOther);
         const toggle = (i: number) => {
           const cur = buf.answers?.[personaIndex] ?? [];
+          const curFull = cur.filter((idx) => !isOther(idx)).length >= q.maxSelect;
           const next = cur.includes(i)
             ? cur.filter((x) => x !== i)
-            : cur.length >= q.maxSelect ? cur : [...cur, i];
+            : (curFull && !isOther(i)) ? cur : [...cur, i];
           push({ ...buf, answers: setAt(buf.answers, personaIndex, next) });
         };
         return (
         <>
           {liveNote}
           {q.maxSelect > 1 && (
-            <p className="tg-standing" style={{ marginBottom: ".9rem" }}>Select up to {q.maxSelect}.</p>
+            <p className="tg-standing" style={{ marginBottom: ".9rem" }}>Select up to {q.maxSelect} — plus “Other” if you need it.</p>
           )}
           <div className="tg-options">
             {q.options.map((opt, i) => {
               const on = sel.includes(i);
-              const locked = !on && full;
+              const locked = !on && full && !isOther(i);
               return (
                 <button key={i} className={`tg-opt-card ${on ? "sel" : ""} ${isController ? "" : "is-live"} ${locked ? "pick-full" : ""}`}
                   onClick={isController && !locked ? () => toggle(i) : undefined}

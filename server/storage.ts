@@ -1,7 +1,7 @@
 import type { GameState, Persona } from "@shared/schema";
 import {
   TOTAL_STEPS, END_STEP, ROUNDS, isPersonaStep, isFacilitatorStep, isReviewStep, stepInfo, skipTarget,
-  emptyPersona, PERSONA_QUESTIONS, ITEM_BY_ID, MAX_ITEMS,
+  emptyPersona, PERSONA_QUESTIONS, isOtherOption, ITEM_BY_ID, MAX_ITEMS,
   isCustomItem, customItemText, CUSTOM_PREFIX, CUSTOM_MAX_LEN,
 } from "@shared/content";
 
@@ -204,11 +204,17 @@ export class MemStorage {
     // Validate & clamp against the question set.
     const answers = PERSONA_QUESTIONS.map((q, i) => {
       const raw = Array.isArray(persona?.answers?.[i]) ? (persona.answers[i] as number[]) : [];
+      // Up to q.maxSelect listed options — plus the "Other" slot on top, so a typed
+      // answer is never dropped just because the listed picks are already full.
       const out: number[] = [];
+      let picked = 0;
       for (const v of raw) {
         const n = Math.floor(Number(v));
-        if (Number.isFinite(n) && n >= 0 && n < q.options.length && !out.includes(n)) out.push(n);
-        if (out.length >= q.maxSelect) break;
+        if (!Number.isFinite(n) || n < 0 || n >= q.options.length || out.includes(n)) continue;
+        const other = isOtherOption(q.options[n]);
+        if (!other && picked >= q.maxSelect) continue;
+        out.push(n);
+        if (!other) picked += 1;
       }
       return out;
     });
