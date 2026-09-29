@@ -5,8 +5,8 @@ answers three questions as themselves, packs a learning backpack, builds a
 learner persona, and then goes through the same steps again from the persona's
 point of view — so the two perspectives can be compared side by side.
 
-- **Live:** https://learning-singleplayer.onrender.com
-- **Multiplayer version:** [`learning-multiplayer`](https://github.com/Helti2636/learning-multiplayer) — same journey for 2–5 players
+- **Live:** https://learning-singleplayer-ujcx.onrender.com
+- **Multiplayer version:** [`learning-multiplayer`](https://github.com/CDOTS-Learning/learning-multiplayer) — same journey for 2–5 players
 
 ## How a session runs
 
@@ -87,8 +87,12 @@ Render Web Service, runtime **Node**:
 - No environment variables, no database.
 
 Every push to `main` triggers a new deployment automatically (about 3 minutes).
-See `RENDER-SETUP.md` in this repo — the hosting still needs to be moved into
-the team's own account.
+The service runs on the team's own Render account — see `RENDER-SETUP.md` for
+how it is set up and what to do when a deployment misbehaves.
+
+> **An older copy may still answer at https://learning-singleplayer.onrender.com.**
+> That one belongs to the previous maintainer's personal account, receives no
+> updates and will disappear. Always share the link at the top of this page.
 
 ## Good to know
 
